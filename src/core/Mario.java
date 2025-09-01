@@ -1,25 +1,29 @@
 package core;
 
 import interfaces.MarioComponent;
-import states.*;
-import ui.GameUI;
-import java.util.List;
+import states.FireMario;
+import states.MarioState;
+import states.SmallMario;
+import ui.GameFrame;
+
+import java.awt.Point;
+import java.awt.Color;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Main Mario class - Context for State Pattern, Component for Decorator Pattern
  */
 public class Mario implements MarioComponent {
     private MarioState currentState;
-    private int x, y;
+    private Point position;
     private int score;
-    private int lives;
+    protected int lives;
     private List<String> abilities;
 
     public Mario() {
         this.currentState = new SmallMario(this);
-        this.x = 0;
-        this.y = 0;
+        this.position = new Point(100, 400);
         this.score = 0;
         this.lives = 3;
         this.abilities = new ArrayList<>();
@@ -32,11 +36,6 @@ public class Mario implements MarioComponent {
 
     public MarioState getState() {
         return currentState;
-    }
-
-    // Public method for states to reduce lives
-    public void loseLife() {
-        this.lives--;
     }
 
     // Delegate to current state (State Pattern)
@@ -76,6 +75,11 @@ public class Mario implements MarioComponent {
     }
 
     @Override
+    public String getStateEmoji() {
+        return currentState.getStateEmoji();
+    }
+
+    @Override
     public boolean canBreakBlocks() {
         return currentState.canBreakBlocks();
     }
@@ -111,12 +115,30 @@ public class Mario implements MarioComponent {
         return lives;
     }
 
+    public void setLives(int lives) {
+        this.lives = lives;
+    }
+
+    @Override
+    public Point getPosition() {
+        return new Point(position);
+    }
+
+    @Override
+    public void setPosition(Point position) {
+        this.position = position;
+    }
+
     // Special method for Fire Mario
     public void shootFire() {
-        if (currentState instanceof FireMario) {
+        if (currentState != null) {
             ((FireMario) currentState).shootFire();
         } else {
-            GameUI.printError("❌ Cannot shoot fire in current state!");
+            GameFrame.getInstance().addLogMessage("❌ Cannot shoot fire in current state!", Color.RED);
         }
+    }
+
+    public Color getStateColor() {
+        return currentState.getStateColor();
     }
 }

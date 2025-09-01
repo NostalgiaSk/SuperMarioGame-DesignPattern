@@ -1,33 +1,35 @@
 package decorators;
 
 import interfaces.MarioComponent;
-import ui.GameUI;
+import ui.GameFrame;
+
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.List;
-import java.util.ArrayList;
+import javax.swing.SwingUtilities;
 
 /**
  * Speed Boost Decorator - Increases movement speed temporarily
  */
 public class SpeedBoostDecorator extends MarioDecorator {
-    private double speedMultiplier;
     private int duration;
     private ScheduledExecutorService timer;
 
     public SpeedBoostDecorator(MarioComponent mario) {
         super(mario);
-        this.speedMultiplier = 2.0;
-        this.duration = 8; // 8 seconds
+        this.duration = 8;
         startTimer();
     }
 
     @Override
     public void move() {
         decoratedMario.move();
-        GameUI.printDecorator("🚀 SPEED BOOST: Moving at " + speedMultiplier + "x speed!");
-        decoratedMario.addScore(5); // Bonus points for enhanced movement
+        GameFrame.getInstance().addLogMessage("🚀 SPEED BOOST: Moving at 2x speed!", Color.MAGENTA);
+        decoratedMario.addScore(5);
+        GameFrame.getInstance().updateDisplay();
     }
 
     @Override
@@ -51,8 +53,12 @@ public class SpeedBoostDecorator extends MarioDecorator {
         timer = Executors.newScheduledThreadPool(1);
         timer.scheduleAtFixedRate(() -> {
             duration--;
+            SwingUtilities.invokeLater(() -> GameFrame.getInstance().updateDisplay());
             if (duration <= 0) {
-                GameUI.printDecorator("🚀 Speed Boost expired!");
+                SwingUtilities.invokeLater(() -> {
+                    GameFrame.getInstance().addLogMessage("🚀 Speed Boost expired!", Color.GRAY);
+                    GameFrame.getInstance().removeDecorator("Speed Boost");
+                });
                 timer.shutdown();
             }
         }, 1, 1, TimeUnit.SECONDS);

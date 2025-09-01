@@ -1,10 +1,13 @@
 package states;
 
 import core.Mario;
-import ui.GameUI;
+import ui.GameFrame;
+
+import java.awt.Color;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import javax.swing.SwingUtilities;
 
 /**
  * Invincible Mario State - Temporary invincibility
@@ -17,70 +20,76 @@ public class InvincibleMario extends MarioState {
     public InvincibleMario(Mario mario, MarioState originalState) {
         super(mario);
         this.originalState = originalState;
-        this.invincibilityTimer = 8; // 8 seconds of invincibility
+        this.invincibilityTimer = 8;
         startTimer();
     }
 
     @Override
     public void jump() {
-        GameUI.printAction("⭐ Invincible Mario jumps with STAR POWER!");
+        GameFrame.getInstance().addLogMessage("⭐ Invincible Mario jumps with STAR POWER!", Color.BLUE);
         mario.addScore(25);
+        GameFrame.getInstance().updateDisplay();
     }
 
     @Override
     public void move() {
-        GameUI.printAction("⭐ Invincible Mario moves unstoppably");
+        GameFrame.getInstance().addLogMessage("⭐ Invincible Mario moves unstoppably", Color.BLUE);
         mario.addScore(15);
+        GameFrame.getInstance().updateDisplay();
     }
 
     @Override
     public void takeDamage() {
-        GameUI.printAction("⭐ Invincible Mario is IMMUNE to damage!");
+        GameFrame.getInstance().addLogMessage("⭐ Invincible Mario is IMMUNE to damage!", Color.YELLOW);
+        GameFrame.getInstance().updateDisplay();
     }
 
     @Override
     public void collectMushroom() {
         mario.addScore(100);
-        GameUI.printBonus("⭐ Invincible Mario collects mushroom (bonus points)");
+        GameFrame.getInstance().addLogMessage("⭐ Invincible Mario collects mushroom (bonus points)", Color.CYAN);
+        GameFrame.getInstance().updateDisplay();
     }
 
     @Override
     public void collectFireFlower() {
         mario.addScore(200);
-        GameUI.printBonus("⭐ Invincible Mario collects fire flower (bonus points)");
+        GameFrame.getInstance().addLogMessage("⭐ Invincible Mario collects fire flower (bonus points)", Color.CYAN);
+        GameFrame.getInstance().updateDisplay();
     }
 
     @Override
     public void collectStar() {
-        this.invincibilityTimer = 8; // Reset timer
+        this.invincibilityTimer = 8;
         mario.addScore(300);
-        GameUI.printBonus("⭐ Star collected! Invincibility timer reset!");
+        GameFrame.getInstance().addLogMessage("⭐ Star collected! Invincibility timer reset!", Color.CYAN);
+        GameFrame.getInstance().updateDisplay();
     }
 
     private void startTimer() {
         scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(() -> {
             invincibilityTimer--;
-            GameUI.printTimer("⭐ Invincibility: " + invincibilityTimer + " seconds left");
-
-            if (invincibilityTimer <= 0) {
-                mario.setState(originalState);
-                GameUI.printStateChange("⭐ → " + getStateEmoji(originalState) + " Invincibility expired!");
-                scheduler.shutdown();
-            }
+            SwingUtilities.invokeLater(() -> {
+                GameFrame.getInstance().updateInvincibilityTimer(invincibilityTimer);
+                if (invincibilityTimer <= 0) {
+                    mario.setState(originalState);
+                    GameFrame.getInstance().addLogMessage("⭐ → " + originalState.getStateEmoji() + " Invincibility expired!", Color.ORANGE);
+                    GameFrame.getInstance().updateDisplay();
+                    scheduler.shutdown();
+                }
+            });
         }, 1, 1, TimeUnit.SECONDS);
-    }
-
-    private String getStateEmoji(MarioState state) {
-        if (state instanceof SmallMario) return "🔴";
-        if (state instanceof BigMario) return "🟡";
-        if (state instanceof FireMario) return "🔥";
-        return "❓";
     }
 
     @Override
     public String getStateName() {
         return "Invincible " + originalState.getStateName() + " (" + invincibilityTimer + "s)";
+    }
+
+    @Override
+    public String getStateEmoji() {
+        return "⭐";
     }
 
     @Override
@@ -91,5 +100,10 @@ public class InvincibleMario extends MarioState {
     @Override
     public boolean canShootFire() {
         return originalState.canShootFire();
+    }
+
+    @Override
+    public Color getStateColor() {
+        return new Color(255, 255, 0);
     }
 }

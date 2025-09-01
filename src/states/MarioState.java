@@ -1,6 +1,8 @@
 package states;
 import core.Mario;
 
+import java.awt.Color;
+
 /**
  * Abstract State class for State Pattern
  * Defines the interface for different Mario states
@@ -19,6 +21,8 @@ public abstract class MarioState {
     public abstract void collectFireFlower();
     public abstract void collectStar();
     public abstract String getStateName();
+    public abstract String getStateEmoji();
     public abstract boolean canBreakBlocks();
     public abstract boolean canShootFire();
+    public abstract Color getStateColor();
 }

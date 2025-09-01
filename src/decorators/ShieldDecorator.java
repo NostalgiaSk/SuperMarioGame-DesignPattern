@@ -1,12 +1,15 @@
 package decorators;
 
 import interfaces.MarioComponent;
-import ui.GameUI;
+import ui.GameFrame;
+
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.List;
-import java.util.ArrayList;
+import javax.swing.SwingUtilities;
 
 /**
  * Shield Decorator - Absorbs damage
@@ -19,7 +22,7 @@ public class ShieldDecorator extends MarioDecorator {
     public ShieldDecorator(MarioComponent mario) {
         super(mario);
         this.shieldStrength = 2;
-        this.duration = 12; // 12 seconds
+        this.duration = 12;
         startTimer();
     }
 
@@ -27,13 +30,15 @@ public class ShieldDecorator extends MarioDecorator {
     public void takeDamage() {
         if (shieldStrength > 0) {
             shieldStrength--;
-            GameUI.printDecorator("🛡️ SHIELD: Damage blocked! Strength remaining: " + shieldStrength);
+            GameFrame.getInstance().addLogMessage("🛡️ SHIELD: Damage blocked! Strength: " + shieldStrength, Color.CYAN);
             if (shieldStrength <= 0) {
-                GameUI.printDecorator("🛡️ Shield broken!");
+                GameFrame.getInstance().addLogMessage("🛡️ Shield broken!", Color.ORANGE);
+                GameFrame.getInstance().removeDecorator("Shield");
             }
         } else {
             decoratedMario.takeDamage();
         }
+        GameFrame.getInstance().updateDisplay();
     }
 
     @Override
@@ -57,8 +62,12 @@ public class ShieldDecorator extends MarioDecorator {
         timer = Executors.newScheduledThreadPool(1);
         timer.scheduleAtFixedRate(() -> {
             duration--;
+            SwingUtilities.invokeLater(() -> GameFrame.getInstance().updateDisplay());
             if (duration <= 0 || shieldStrength <= 0) {
-                GameUI.printDecorator("🛡️ Shield expired!");
+                SwingUtilities.invokeLater(() -> {
+                    GameFrame.getInstance().addLogMessage("🛡️ Shield expired!", Color.GRAY);
+                    GameFrame.getInstance().removeDecorator("Shield");
+                });
                 timer.shutdown();
             }
         }, 1, 1, TimeUnit.SECONDS);

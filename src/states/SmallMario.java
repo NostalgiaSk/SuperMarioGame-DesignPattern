@@ -1,7 +1,9 @@
 package states;
 
 import core.Mario;
-import ui.GameUI;
+import ui.GameFrame;
+
+import java.awt.Color;
 
 /**
  * Small Mario State - Default state
@@ -14,49 +16,60 @@ public class SmallMario extends MarioState {
 
     @Override
     public void jump() {
-        GameUI.printAction("🔴 Small Mario performs a small jump!");
+        GameFrame.getInstance().addLogMessage("🔴 Small Mario performs a small jump!", Color.BLUE);
         mario.addScore(10);
+        GameFrame.getInstance().updateDisplay();
     }
 
     @Override
     public void move() {
-        GameUI.printAction("🔴 Small Mario moves carefully");
+        GameFrame.getInstance().addLogMessage("🔴 Small Mario moves carefully", Color.BLUE);
         mario.addScore(5);
+        GameFrame.getInstance().updateDisplay();
     }
 
     @Override
     public void takeDamage() {
-        mario.loseLife();
-        GameUI.printDamage("💀 Small Mario dies! Lost a life!");
+        mario.setLives(mario.getLives()-1);
+        GameFrame.getInstance().addLogMessage("💀 Small Mario dies! Lost a life!", Color.RED);
         if (mario.getLives() <= 0) {
-            GameUI.printGameOver("🎮 GAME OVER!");
+            GameFrame.getInstance().showGameOver();
         }
+        GameFrame.getInstance().updateDisplay();
     }
 
     @Override
     public void collectMushroom() {
         mario.setState(new BigMario(mario));
         mario.addScore(100);
-        GameUI.printStateChange("🔴 → 🟡 Small Mario becomes Big Mario!");
+        GameFrame.getInstance().addLogMessage("🔴 → 🟡 Small Mario becomes Big Mario!", Color.GREEN);
+        GameFrame.getInstance().updateDisplay();
     }
 
     @Override
     public void collectFireFlower() {
         mario.setState(new FireMario(mario));
         mario.addScore(200);
-        GameUI.printStateChange("🔴 → 🔥 Small Mario becomes Fire Mario!");
+        GameFrame.getInstance().addLogMessage("🔴 → 🔥 Small Mario becomes Fire Mario!", Color.GREEN);
+        GameFrame.getInstance().updateDisplay();
     }
 
     @Override
     public void collectStar() {
         mario.setState(new InvincibleMario(mario, this));
         mario.addScore(300);
-        GameUI.printStateChange("🔴 → ⭐ Small Mario becomes Invincible!");
+        GameFrame.getInstance().addLogMessage("🔴 → ⭐ Small Mario becomes Invincible!", Color.GREEN);
+        GameFrame.getInstance().updateDisplay();
     }
 
     @Override
     public String getStateName() {
         return "Small Mario";
+    }
+
+    @Override
+    public String getStateEmoji() {
+        return "🔴";
     }
 
     @Override
@@ -67,5 +80,10 @@ public class SmallMario extends MarioState {
     @Override
     public boolean canShootFire() {
         return false;
+    }
+
+    @Override
+    public Color getStateColor() {
+        return new Color(255, 100, 100);
     }
 }

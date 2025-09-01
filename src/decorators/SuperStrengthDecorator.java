@@ -1,25 +1,26 @@
 package decorators;
 
 import interfaces.MarioComponent;
-import ui.GameUI;
+import ui.GameFrame;
+
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.List;
-import java.util.ArrayList;
+import javax.swing.SwingUtilities;
 
 /**
  * Super Strength Decorator - Enhanced block breaking ability
  */
 public class SuperStrengthDecorator extends MarioDecorator {
-    private double strengthMultiplier;
     private int duration;
     private ScheduledExecutorService timer;
 
     public SuperStrengthDecorator(MarioComponent mario) {
         super(mario);
-        this.strengthMultiplier = 3.0;
-        this.duration = 6; // 6 seconds
+        this.duration = 6;
         startTimer();
     }
 
@@ -46,16 +47,21 @@ public class SuperStrengthDecorator extends MarioDecorator {
     }
 
     public void breakSpecialBlock() {
-        GameUI.printDecorator("💪 SUPER STRENGTH: Breaking reinforced block!");
+        GameFrame.getInstance().addLogMessage("💪 SUPER STRENGTH: Breaking reinforced block!", Color.MAGENTA);
         decoratedMario.addScore(100);
+        GameFrame.getInstance().updateDisplay();
     }
 
     private void startTimer() {
         timer = Executors.newScheduledThreadPool(1);
         timer.scheduleAtFixedRate(() -> {
             duration--;
+            SwingUtilities.invokeLater(() -> GameFrame.getInstance().updateDisplay());
             if (duration <= 0) {
-                GameUI.printDecorator("💪 Super Strength expired!");
+                SwingUtilities.invokeLater(() -> {
+                    GameFrame.getInstance().addLogMessage("💪 Super Strength expired!", Color.GRAY);
+                    GameFrame.getInstance().removeDecorator("Super Strength");
+                });
                 timer.shutdown();
             }
         }, 1, 1, TimeUnit.SECONDS);

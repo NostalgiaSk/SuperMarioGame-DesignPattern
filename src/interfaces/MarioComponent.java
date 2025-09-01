@@ -1,4 +1,6 @@
 package interfaces;
+
+import java.awt.Point;
 import java.util.List;
 
 /**
@@ -20,4 +22,7 @@ public interface MarioComponent {
     boolean hasAbility(String ability);
     List<String> getAbilities();
     int getLives();
+    Point getPosition();
+    void setPosition(Point position);
+    String getStateEmoji();
 }

@@ -1,12 +1,14 @@
 package decorators;
-
 import interfaces.MarioComponent;
-import ui.GameUI;
+import ui.GameFrame;
+
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.List;
-import java.util.ArrayList;
+import javax.swing.SwingUtilities;
 
 /**
  * Double Jump Decorator - Allows second jump in mid-air
@@ -19,7 +21,7 @@ public class DoubleJumpDecorator extends MarioDecorator {
     public DoubleJumpDecorator(MarioComponent mario) {
         super(mario);
         this.hasUsedSecondJump = false;
-        this.duration = 10; // 10 seconds
+        this.duration = 10;
         startTimer();
     }
 
@@ -27,24 +29,25 @@ public class DoubleJumpDecorator extends MarioDecorator {
     public void jump() {
         decoratedMario.jump();
         if (!hasUsedSecondJump) {
-            GameUI.printDecorator("⬆️ DOUBLE JUMP: Second jump activated!");
+            GameFrame.getInstance().addLogMessage("⬆️ DOUBLE JUMP: Second jump activated!", Color.MAGENTA);
             hasUsedSecondJump = true;
-            decoratedMario.addScore(20); // Bonus for double jump
+            decoratedMario.addScore(20);
 
-            // Reset after 2 seconds (simulating landing)
             ScheduledExecutorService resetTimer = Executors.newScheduledThreadPool(1);
             resetTimer.schedule(() -> {
                 hasUsedSecondJump = false;
-                GameUI.printInfo("⬇️ Mario landed - double jump reset");
+                SwingUtilities.invokeLater(() ->
+                        GameFrame.getInstance().addLogMessage("⬇️ Mario landed - double jump reset", Color.GRAY));
                 resetTimer.shutdown();
             }, 2, TimeUnit.SECONDS);
         }
+        GameFrame.getInstance().updateDisplay();
     }
 
     @Override
     public void move() {
         decoratedMario.move();
-        hasUsedSecondJump = false; // Reset when moving on ground
+        hasUsedSecondJump = false;
     }
 
     @Override
@@ -68,8 +71,12 @@ public class DoubleJumpDecorator extends MarioDecorator {
         timer = Executors.newScheduledThreadPool(1);
         timer.scheduleAtFixedRate(() -> {
             duration--;
+            SwingUtilities.invokeLater(() -> GameFrame.getInstance().updateDisplay());
             if (duration <= 0) {
-                GameUI.printDecorator("⬆️ Double Jump expired!");
+                SwingUtilities.invokeLater(() -> {
+                    GameFrame.getInstance().addLogMessage("⬆️ Double Jump expired!", Color.GRAY);
+                    GameFrame.getInstance().removeDecorator("Double Jump");
+                });
                 timer.shutdown();
             }
         }, 1, 1, TimeUnit.SECONDS);

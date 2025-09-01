@@ -1,10 +1,12 @@
 package decorators;
 
 import interfaces.MarioComponent;
+
+import java.awt.Point;
 import java.util.List;
 
 /**
- * Base Decorator class
+ * Base Decorator class for Decorator Pattern
  */
 public abstract class MarioDecorator implements MarioComponent {
     protected MarioComponent decoratedMario;
@@ -50,6 +52,11 @@ public abstract class MarioDecorator implements MarioComponent {
     }
 
     @Override
+    public String getStateEmoji() {
+        return decoratedMario.getStateEmoji();
+    }
+
+    @Override
     public boolean canBreakBlocks() {
         return decoratedMario.canBreakBlocks();
     }
@@ -82,5 +89,15 @@ public abstract class MarioDecorator implements MarioComponent {
     @Override
     public int getLives() {
         return decoratedMario.getLives();
+    }
+
+    @Override
+    public Point getPosition() {
+        return decoratedMario.getPosition();
+    }
+
+    @Override
+    public void setPosition(Point position) {
+        decoratedMario.setPosition(position);
     }
 }
