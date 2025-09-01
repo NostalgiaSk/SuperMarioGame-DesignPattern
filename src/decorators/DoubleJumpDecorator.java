@@ -36,8 +36,7 @@ public class DoubleJumpDecorator extends MarioDecorator {
             ScheduledExecutorService resetTimer = Executors.newScheduledThreadPool(1);
             resetTimer.schedule(() -> {
                 hasUsedSecondJump = false;
-                SwingUtilities.invokeLater(() ->
-                        GameFrame.getInstance().addLogMessage("⬇️ Mario landed - double jump reset", Color.GRAY));
+                SwingUtilities.invokeLater(() -> GameFrame.getInstance().addLogMessage("⬇️ Mario landed - double jump reset", Color.GRAY));
                 resetTimer.shutdown();
             }, 2, TimeUnit.SECONDS);
         }
@@ -45,8 +44,8 @@ public class DoubleJumpDecorator extends MarioDecorator {
     }
 
     @Override
-    public void move() {
-        decoratedMario.move();
+    public void move(int direction) {
+        decoratedMario.move(direction);
         hasUsedSecondJump = false;
     }
 
@@ -67,6 +66,11 @@ public class DoubleJumpDecorator extends MarioDecorator {
         return abilities;
     }
 
+    @Override
+    public void setLives(int lives) {
+
+    }
+
     private void startTimer() {
         timer = Executors.newScheduledThreadPool(1);
         timer.scheduleAtFixedRate(() -> {
@@ -80,9 +84,5 @@ public class DoubleJumpDecorator extends MarioDecorator {
                 timer.shutdown();
             }
         }, 1, 1, TimeUnit.SECONDS);
-    }
-
-    public boolean isActive() {
-        return duration > 0;
     }
 }

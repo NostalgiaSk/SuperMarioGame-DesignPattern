@@ -3,7 +3,7 @@ package decorators;
 import interfaces.MarioComponent;
 import ui.GameFrame;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -25,8 +25,18 @@ public class SpeedBoostDecorator extends MarioDecorator {
     }
 
     @Override
-    public void move() {
-        decoratedMario.move();
+    public void move(int direction) {
+        // Apply speed boost (move further)
+        Point pos = decoratedMario.getPosition();
+        pos.x += direction * 12; // Even faster movement
+
+        // Boundary checking
+        if (pos.x < 0) pos.x = 0;
+        if (pos.x > GameFrame.getInstance().getGamePanel().getWidth() - 40)
+            pos.x = GameFrame.getInstance().getGamePanel().getWidth() - 40;
+
+        decoratedMario.setPosition(pos);
+
         GameFrame.getInstance().addLogMessage("🚀 SPEED BOOST: Moving at 2x speed!", Color.MAGENTA);
         decoratedMario.addScore(5);
         GameFrame.getInstance().updateDisplay();
@@ -49,6 +59,11 @@ public class SpeedBoostDecorator extends MarioDecorator {
         return abilities;
     }
 
+    @Override
+    public void setLives(int lives) {
+
+    }
+
     private void startTimer() {
         timer = Executors.newScheduledThreadPool(1);
         timer.scheduleAtFixedRate(() -> {
@@ -62,9 +77,5 @@ public class SpeedBoostDecorator extends MarioDecorator {
                 timer.shutdown();
             }
         }, 1, 1, TimeUnit.SECONDS);
-    }
-
-    public boolean isActive() {
-        return duration > 0;
     }
 }

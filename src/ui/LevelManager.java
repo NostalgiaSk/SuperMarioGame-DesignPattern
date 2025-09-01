@@ -31,25 +31,11 @@ class Level {
         blocks.add(block);
     }
 
-    public List<GameObject> getItems() {
-        return items;
-    }
-
-    public List<Block> getBlocks() {
-        return blocks;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Color getBackgroundColor() {
-        return backgroundColor;
-    }
+    public List<GameObject> getItems() { return items; }
+    public List<Block> getBlocks() { return blocks; }
+    public String getName() { return name; }
+    public String getDescription() { return description; }
+    public Color getBackgroundColor() { return backgroundColor; }
 
     public void reset() {
         for (GameObject item : items) {
@@ -61,10 +47,7 @@ class Level {
     }
 }
 
-/**
- * Level management system
- */
-public class LevelManager {
+class LevelManager {
     private List<Level> levels;
     private int currentLevelIndex;
 

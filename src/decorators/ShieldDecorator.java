@@ -58,6 +58,11 @@ public class ShieldDecorator extends MarioDecorator {
         return abilities;
     }
 
+    @Override
+    public void setLives(int lives) {
+
+    }
+
     private void startTimer() {
         timer = Executors.newScheduledThreadPool(1);
         timer.scheduleAtFixedRate(() -> {
@@ -73,7 +78,5 @@ public class ShieldDecorator extends MarioDecorator {
         }, 1, 1, TimeUnit.SECONDS);
     }
 
-    public boolean isActive() {
-        return duration > 0 && shieldStrength > 0;
-    }
+    public boolean isActive() { return duration > 0 && shieldStrength > 0; }
 }

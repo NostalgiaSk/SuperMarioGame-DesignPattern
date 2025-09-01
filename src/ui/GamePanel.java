@@ -33,6 +33,12 @@ public class GamePanel extends JPanel {
         animationTimer = new Timer(50, e -> repaint());
         animationTimer.start();
 
+        // Game loop timer for continuous updates
+        Timer gameLoopTimer = new Timer(100, e -> {
+            mario.update();
+        });
+        gameLoopTimer.start();
+
         addLogMessage("🎮 Welcome to Super Mario Design Patterns!", Color.BLUE);
         addLogMessage("Use the control panel to interact with Mario!", Color.GRAY);
     }
@@ -102,6 +108,7 @@ public class GamePanel extends JPanel {
 
         // Draw decorators effects
         List<String> abilities = mario.getAbilities();
+        int effectOffset = 0;
         for (String ability : abilities) {
             if (ability.contains("Speed Boost")) {
                 g2d.setColor(new Color(255, 0, 255, 100));
@@ -116,12 +123,14 @@ public class GamePanel extends JPanel {
                 g2d.setColor(new Color(255, 165, 0, 120));
                 g2d.fillRoundRect(pos.x - 3, drawY - 3, 46, 46, 12, 12);
             }
+            effectOffset += 15;
         }
 
-        // Draw Mario's face
+        // Draw Mario's face - direction aware
         g2d.setColor(Color.BLACK);
-        g2d.fillOval(pos.x + 12, drawY + 8, 4, 4); // Left eye
-        g2d.fillOval(pos.x + 24, drawY + 8, 4, 4); // Right eye
+        int eyeOffset = ((Mario) mario).getFacingDirection() > 0 ? 0 : 8;
+        g2d.fillOval(pos.x + 12 + eyeOffset, drawY + 8, 4, 4); // Left eye
+        g2d.fillOval(pos.x + 24 - eyeOffset, drawY + 8, 4, 4); // Right eye
         g2d.fillOval(pos.x + 18, drawY + 15, 4, 2); // Nose
         g2d.drawArc(pos.x + 15, drawY + 20, 10, 8, 0, -180); // Mouth
 

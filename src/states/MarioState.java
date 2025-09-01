@@ -15,7 +15,10 @@ public abstract class MarioState {
     }
 
     public abstract void jump();
+    public abstract void move(int direction);
+
     public abstract void move();
+
     public abstract void takeDamage();
     public abstract void collectMushroom();
     public abstract void collectFireFlower();

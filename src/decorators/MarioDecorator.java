@@ -15,89 +15,40 @@ public abstract class MarioDecorator implements MarioComponent {
         this.decoratedMario = mario;
     }
 
-    // Default delegation to wrapped mario
     @Override
-    public void jump() {
-        decoratedMario.jump();
-    }
-
+    public void jump() { decoratedMario.jump(); }
     @Override
-    public void move() {
-        decoratedMario.move();
-    }
-
+    public void move(int direction) { decoratedMario.move(direction); }
     @Override
-    public void takeDamage() {
-        decoratedMario.takeDamage();
-    }
-
+    public void takeDamage() { decoratedMario.takeDamage(); }
     @Override
-    public void collectMushroom() {
-        decoratedMario.collectMushroom();
-    }
-
+    public void collectMushroom() { decoratedMario.collectMushroom(); }
     @Override
-    public void collectFireFlower() {
-        decoratedMario.collectFireFlower();
-    }
-
+    public void collectFireFlower() { decoratedMario.collectFireFlower(); }
     @Override
-    public void collectStar() {
-        decoratedMario.collectStar();
-    }
-
+    public void collectStar() { decoratedMario.collectStar(); }
     @Override
-    public String getStateName() {
-        return decoratedMario.getStateName();
-    }
-
+    public String getStateName() { return decoratedMario.getStateName(); }
     @Override
-    public String getStateEmoji() {
-        return decoratedMario.getStateEmoji();
-    }
-
+    public String getStateEmoji() { return decoratedMario.getStateEmoji(); }
     @Override
-    public boolean canBreakBlocks() {
-        return decoratedMario.canBreakBlocks();
-    }
-
+    public boolean canBreakBlocks() { return decoratedMario.canBreakBlocks(); }
     @Override
-    public boolean canShootFire() {
-        return decoratedMario.canShootFire();
-    }
-
+    public boolean canShootFire() { return decoratedMario.canShootFire(); }
     @Override
-    public int getScore() {
-        return decoratedMario.getScore();
-    }
-
+    public int getScore() { return decoratedMario.getScore(); }
     @Override
-    public void addScore(int points) {
-        decoratedMario.addScore(points);
-    }
-
+    public void addScore(int points) { decoratedMario.addScore(points); }
     @Override
-    public boolean hasAbility(String ability) {
-        return decoratedMario.hasAbility(ability);
-    }
-
+    public boolean hasAbility(String ability) { return decoratedMario.hasAbility(ability); }
     @Override
-    public List<String> getAbilities() {
-        return decoratedMario.getAbilities();
-    }
-
+    public List<String> getAbilities() { return decoratedMario.getAbilities(); }
     @Override
-    public int getLives() {
-        return decoratedMario.getLives();
-    }
-
+    public int getLives() { return decoratedMario.getLives(); }
     @Override
-    public Point getPosition() {
-        return decoratedMario.getPosition();
-    }
-
+    public Point getPosition() { return decoratedMario.getPosition(); }
     @Override
-    public void setPosition(Point position) {
-        decoratedMario.setPosition(position);
-    }
+    public void setPosition(Point position) { decoratedMario.setPosition(position); }
+    @Override
+    public void update() { decoratedMario.update(); }
 }

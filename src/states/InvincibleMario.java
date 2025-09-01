@@ -3,7 +3,7 @@ package states;
 import core.Mario;
 import ui.GameFrame;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -12,7 +12,7 @@ import javax.swing.SwingUtilities;
 /**
  * Invincible Mario State - Temporary invincibility
  */
-public class InvincibleMario extends MarioState {
+class InvincibleMario extends MarioState {
     private MarioState originalState;
     private int invincibilityTimer;
     private ScheduledExecutorService scheduler;
@@ -32,10 +32,25 @@ public class InvincibleMario extends MarioState {
     }
 
     @Override
-    public void move() {
-        GameFrame.getInstance().addLogMessage("⭐ Invincible Mario moves unstoppably", Color.BLUE);
+    public void move(int direction) {
+        Point pos = mario.getPosition();
+        pos.x += direction * 10; // Invincible Mario moves fastest
+
+        // Boundary checking
+        if (pos.x < 0) pos.x = 0;
+        if (pos.x > GameFrame.getInstance().getGamePanel().getWidth() - 40)
+            pos.x = GameFrame.getInstance().getGamePanel().getWidth() - 40;
+
+        mario.setPosition(pos);
+
+        GameFrame.getInstance().addLogMessage("⭐ Invincible Mario moves " + (direction > 0 ? "right" : "left") + " unstoppably", Color.BLUE);
         mario.addScore(15);
         GameFrame.getInstance().updateDisplay();
+    }
+
+    @Override
+    public void move() {
+
     }
 
     @Override
@@ -86,24 +101,12 @@ public class InvincibleMario extends MarioState {
     public String getStateName() {
         return "Invincible " + originalState.getStateName() + " (" + invincibilityTimer + "s)";
     }
-
     @Override
-    public String getStateEmoji() {
-        return "⭐";
-    }
-
+    public String getStateEmoji() { return "⭐"; }
     @Override
-    public boolean canBreakBlocks() {
-        return true;
-    }
-
+    public boolean canBreakBlocks() { return true; }
     @Override
-    public boolean canShootFire() {
-        return originalState.canShootFire();
-    }
-
+    public boolean canShootFire() { return originalState.canShootFire(); }
     @Override
-    public Color getStateColor() {
-        return new Color(255, 255, 0);
-    }
+    public Color getStateColor() { return new Color(255, 255, 0); }
 }

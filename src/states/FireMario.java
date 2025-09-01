@@ -3,13 +3,12 @@ package states;
 import core.Mario;
 import ui.GameFrame;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * Fire Mario State - Fire power state
  */
 public class FireMario extends MarioState {
-
     public FireMario(Mario mario) {
         super(mario);
     }
@@ -22,10 +21,25 @@ public class FireMario extends MarioState {
     }
 
     @Override
-    public void move() {
-        GameFrame.getInstance().addLogMessage("🔥 Fire Mario moves with fiery power", Color.BLUE);
+    public void move(int direction) {
+        Point pos = mario.getPosition();
+        pos.x += direction * 7; // Fire Mario moves at same speed as Big Mario
+
+        // Boundary checking
+        if (pos.x < 0) pos.x = 0;
+        if (pos.x > GameFrame.getInstance().getGamePanel().getWidth() - 40)
+            pos.x = GameFrame.getInstance().getGamePanel().getWidth() - 40;
+
+        mario.setPosition(pos);
+
+        GameFrame.getInstance().addLogMessage("🔥 Fire Mario moves " + (direction > 0 ? "right" : "left") + " with fiery power", Color.BLUE);
         mario.addScore(12);
         GameFrame.getInstance().updateDisplay();
+    }
+
+    @Override
+    public void move() {
+
     }
 
     @Override
@@ -64,27 +78,13 @@ public class FireMario extends MarioState {
     }
 
     @Override
-    public String getStateName() {
-        return "Fire Mario";
-    }
-
+    public String getStateName() { return "Fire Mario"; }
     @Override
-    public String getStateEmoji() {
-        return "🔥";
-    }
-
+    public String getStateEmoji() { return "🔥"; }
     @Override
-    public boolean canBreakBlocks() {
-        return true;
-    }
-
+    public boolean canBreakBlocks() { return true; }
     @Override
-    public boolean canShootFire() {
-        return true;
-    }
-
+    public boolean canShootFire() { return true; }
     @Override
-    public Color getStateColor() {
-        return new Color(255, 150, 50);
-    }
+    public Color getStateColor() { return new Color(255, 150, 50); }
 }

@@ -5,7 +5,7 @@ import java.awt.*;
 /**
  * Base class for all game objects
  */
-public abstract class GameObject {
+public class GameObject {
     protected Point position;
     protected int width, height;
     protected Color color;
@@ -25,24 +25,20 @@ public abstract class GameObject {
         return marioRect.intersects(itemRect) && !collected;
     }
 
-    public abstract void draw(Graphics2D g2d);
-
-    public void collect() {
-        collected = true;
+    public void draw(Graphics2D g2d) {
+        if (!collected) {
+            g2d.setColor(color);
+            g2d.fillRoundRect(position.x, position.y, width, height, 10, 10);
+            g2d.setColor(Color.BLACK);
+            g2d.drawRoundRect(position.x, position.y, width, height, 10, 10);
+        }
     }
 
-    public boolean isCollected() {
-        return collected;
-    }
-
-    public Point getPosition() {
-        return position;
-    }
+    public void collect() { collected = true; }
+    public boolean isCollected() { return collected; }
+    public Point getPosition() { return position; }
 }
 
-/**
- * Mushroom power-up
- */
 class Mushroom extends GameObject {
     public Mushroom(Point position) {
         super(position, 30, 30, new Color(255, 100, 100));
@@ -68,9 +64,6 @@ class Mushroom extends GameObject {
     }
 }
 
-/**
- * Fire Flower power-up
- */
 class FireFlower extends GameObject {
     public FireFlower(Point position) {
         super(position, 30, 30, new Color(255, 150, 50));
@@ -99,9 +92,6 @@ class FireFlower extends GameObject {
     }
 }
 
-/**
- * Star power-up
- */
 class Star extends GameObject {
     private int animationFrame = 0;
 
@@ -135,9 +125,6 @@ class Star extends GameObject {
     }
 }
 
-/**
- * Breakable block
- */
 class Block extends GameObject {
     boolean broken = false;
 

@@ -26,7 +26,7 @@ public class SuperStrengthDecorator extends MarioDecorator {
 
     @Override
     public boolean canBreakBlocks() {
-        return true; // Can always break blocks with super strength
+        return true;
     }
 
     @Override
@@ -44,6 +44,11 @@ public class SuperStrengthDecorator extends MarioDecorator {
         List<String> abilities = new ArrayList<>(decoratedMario.getAbilities());
         abilities.add("Super Strength (" + duration + "s)");
         return abilities;
+    }
+
+    @Override
+    public void setLives(int lives) {
+
     }
 
     public void breakSpecialBlock() {
@@ -67,7 +72,5 @@ public class SuperStrengthDecorator extends MarioDecorator {
         }, 1, 1, TimeUnit.SECONDS);
     }
 
-    public boolean isActive() {
-        return duration > 0;
-    }
+    public boolean isActive() { return duration > 0; }
 }

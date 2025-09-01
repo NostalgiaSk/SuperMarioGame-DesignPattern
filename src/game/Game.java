@@ -50,7 +50,9 @@ public class Game {
     private static void executeAction(int choice) throws InterruptedException {
         switch (choice) {
             case 1: mario.jump(); break;
-            case 2: mario.move(); break;
+            case 2:
+                int direction =  1;
+                mario.move(direction); break;
             case 3: shootFire(); break;
             case 4: breakBlock(); break;
             case 5: mario.collectMushroom(); break;

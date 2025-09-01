@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface MarioComponent {
     void jump();
-    void move();
+
     void takeDamage();
     void collectMushroom();
     void collectFireFlower();
@@ -22,7 +22,12 @@ public interface MarioComponent {
     boolean hasAbility(String ability);
     List<String> getAbilities();
     int getLives();
+
+    void setLives(int lives);
+
     Point getPosition();
     void setPosition(Point position);
     String getStateEmoji();
+    void update();
+    void move(int direction);
 }

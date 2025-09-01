@@ -73,18 +73,19 @@ public class GameFrame extends JFrame {
         controlPanel.setBackground(new Color(240, 240, 240));
 
         // Action buttons
-        addButton("🦘 Jump", e -> { mario.jump(); gamePanel.performJumpAnimation(); gamePanel.checkCollisions(); });
-        addButton("🏃 Move", e -> { mario.move(); gamePanel.checkCollisions(); });
+        addButton("🦘 Jump", e -> { mario.jump(); gamePanel.checkCollisions(); });
+        addButton("⬅️ Move Left", e -> { mario.move(-1); gamePanel.checkCollisions(); });
+        addButton("➡️ Move Right", e -> { mario.move(1); gamePanel.checkCollisions(); });
         addButton("🔥 Fire", e -> shootFire());
         addButton("🧱 Break", e -> breakBlock());
-        addButton("🍄 Mushroom", e -> { mario.collectMushroom(); gamePanel.checkCollisions(); });
 
+        addButton("🍄 Mushroom", e -> { mario.collectMushroom(); gamePanel.checkCollisions(); });
         addButton("🌸 Fire Flower", e -> { mario.collectFireFlower(); gamePanel.checkCollisions(); });
         addButton("⭐ Star", e -> { mario.collectStar(); gamePanel.checkCollisions(); });
         addButton("💥 Damage", e -> mario.takeDamage());
         addButton("🚀 Speed", e -> addSpeedBoost());
-        addButton("⬆️ DblJump", e -> addDoubleJump());
 
+        addButton("⬆️ DblJump", e -> addDoubleJump());
         addButton("🛡️ Shield", e -> addShield());
         addButton("💪 Strength", e -> addSuperStrength());
         addButton("🎭 Demo", e -> demonstratePatterns());
@@ -145,15 +146,20 @@ public class GameFrame extends JFrame {
 
         // WASD controls
         inputMap.put(KeyStroke.getKeyStroke('w'), "jump");
-        inputMap.put(KeyStroke.getKeyStroke('a'), "move");
+        inputMap.put(KeyStroke.getKeyStroke('a'), "moveLeft");
+        inputMap.put(KeyStroke.getKeyStroke('d'), "moveRight");
         inputMap.put(KeyStroke.getKeyStroke('s'), "fire");
-        inputMap.put(KeyStroke.getKeyStroke('d'), "break");
+        inputMap.put(KeyStroke.getKeyStroke('b'), "break");
 
         // Number keys for items
         inputMap.put(KeyStroke.getKeyStroke('1'), "mushroom");
         inputMap.put(KeyStroke.getKeyStroke('2'), "flower");
         inputMap.put(KeyStroke.getKeyStroke('3'), "star");
         inputMap.put(KeyStroke.getKeyStroke('4'), "damage");
+
+        // Arrow keys for movement
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "moveLeft");
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "moveRight");
 
         // Space for jump
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "jump");
@@ -162,15 +168,22 @@ public class GameFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mario.jump();
-                gamePanel.performJumpAnimation();
                 gamePanel.checkCollisions();
             }
         });
 
-        actionMap.put("move", new AbstractAction() {
+        actionMap.put("moveLeft", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mario.move();
+                mario.move(-1);
+                gamePanel.checkCollisions();
+            }
+        });
+
+        actionMap.put("moveRight", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mario.move(1);
                 gamePanel.checkCollisions();
             }
         });
@@ -296,7 +309,7 @@ public class GameFrame extends JFrame {
             addLogMessage("▶️ Advanced to " + levelManager.getCurrentLevel().getName(), Color.GREEN);
             updateDisplay();
         } else {
-            addLogMessage("🎉 You've completed all levels!", new Color(255, 215, 0));
+            addLogMessage("🎉 You've completed all levels!", Color.ORANGE);
         }
     }
 
@@ -348,7 +361,7 @@ public class GameFrame extends JFrame {
                     shootFire();
                     break;
                 case 6:
-                    addLogMessage("🎉 Demo Complete! All patterns working together!", new Color(255, 215, 0));
+                    addLogMessage("🎉 Demo Complete! All patterns working together!", Color.ORANGE);
                     demoTimer.stop();
                     break;
             }
@@ -441,4 +454,5 @@ public class GameFrame extends JFrame {
     // Make the frame accessible to other classes
     public MarioComponent getMario() { return mario; }
     public void setMario(MarioComponent mario) { this.mario = mario; }
+    public GamePanel getGamePanel() { return gamePanel; }
 }

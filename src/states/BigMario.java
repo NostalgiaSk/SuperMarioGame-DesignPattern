@@ -7,7 +7,7 @@ import java.awt.Color;
 /**
  * Big Mario State - Powered up state
  */
-public class BigMario extends MarioState {
+public  class BigMario extends MarioState {
 
     public BigMario(Mario mario) {
         super(mario);
@@ -20,11 +20,17 @@ public class BigMario extends MarioState {
         GameFrame.getInstance().updateDisplay();
     }
 
+
     @Override
-    public void move() {
+    public void move(int direction) {
         GameFrame.getInstance().addLogMessage("🟡 Big Mario moves with power", Color.BLUE);
         mario.addScore(8);
         GameFrame.getInstance().updateDisplay();
+    }
+
+    @Override
+    public void move() {
+
     }
 
     @Override
