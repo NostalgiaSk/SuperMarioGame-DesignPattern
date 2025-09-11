@@ -23,8 +23,10 @@ public class GameFrame extends JFrame {
     private GamePanel gamePanel;
     private JPanel controlPanel;
     private JPanel statusPanel;
-    private JLabel scoreLabel, livesLabel, stateLabel, abilitiesLabel;
+    private JLabel scoreLabel, livesLabel, stateLabel, abilitiesLabel, levelLabel;
     private JProgressBar invincibilityBar;
+    private JPanel logPanel;
+    private JTextArea logArea;
 
     private GameFrame() {
         mario = new Mario();
@@ -42,7 +44,8 @@ public class GameFrame extends JFrame {
     private void initializeGUI() {
         setTitle("🍄 Super Mario Design Patterns - State & Decorator Demo 🍄");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(10, 10));
+        getContentPane().setBackground(new Color(45, 45, 45));
 
         // Create game panel
         gamePanel = new GamePanel(mario, levelManager);
@@ -56,8 +59,12 @@ public class GameFrame extends JFrame {
         createStatusPanel();
         add(statusPanel, BorderLayout.NORTH);
 
+        // Create log panel
+        createLogPanel();
+        add(logPanel, BorderLayout.EAST);
+
         // Set window properties
-        pack();
+        setSize(1200, 800);
         setLocationRelativeTo(null);
         setResizable(true);
 
@@ -68,61 +75,86 @@ public class GameFrame extends JFrame {
     }
 
     private void createControlPanel() {
-        controlPanel = new JPanel(new GridLayout(3, 5, 5, 5));
-        controlPanel.setBorder(BorderFactory.createTitledBorder("Game Controls"));
-        controlPanel.setBackground(new Color(240, 240, 240));
+        controlPanel = new JPanel(new GridLayout(3, 5, 8, 8));
+        controlPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder(
+                        BorderFactory.createLineBorder(new Color(100, 100, 100), 2),
+                        "Game Controls",
+                        javax.swing.border.TitledBorder.CENTER,
+                        javax.swing.border.TitledBorder.TOP,
+                        new Font("Arial", Font.BOLD, 14),
+                        new Color(220, 220, 220)
+                ),
+                BorderFactory.createEmptyBorder(5, 10, 10, 10)
+        ));
+        controlPanel.setBackground(new Color(60, 60, 60));
+        controlPanel.setForeground(Color.WHITE);
 
         // Action buttons
-        addButton("🦘 Jump", e -> { mario.jump(); gamePanel.checkCollisions(); });
-        addButton("⬅️ Move Left", e -> { mario.move(-1); gamePanel.checkCollisions(); });
-        addButton("➡️ Move Right", e -> { mario.move(1); gamePanel.checkCollisions(); });
-        addButton("🔥 Fire", e -> shootFire());
-        addButton("🧱 Break", e -> breakBlock());
+        addStyledButton("🦘 Jump", e -> { mario.jump(); gamePanel.checkCollisions(); }, new Color(65, 105, 225));
+        addStyledButton("⬅️ Move Left", e -> { mario.move(-1); gamePanel.checkCollisions(); }, new Color(70, 130, 180));
+        addStyledButton("➡️ Move Right", e -> { mario.move(1); gamePanel.checkCollisions(); }, new Color(70, 130, 180));
+        addStyledButton("🔥 Fire", e -> shootFire(), new Color(220, 20, 60));
+        addStyledButton("🧱 Break", e -> breakBlock(), new Color(139, 69, 19));
 
-        addButton("🍄 Mushroom", e -> { mario.collectMushroom(); gamePanel.checkCollisions(); });
-        addButton("🌸 Fire Flower", e -> { mario.collectFireFlower(); gamePanel.checkCollisions(); });
-        addButton("⭐ Star", e -> { mario.collectStar(); gamePanel.checkCollisions(); });
-        addButton("💥 Damage", e -> mario.takeDamage());
-        addButton("🚀 Speed", e -> addSpeedBoost());
+        addStyledButton("🍄 Mushroom", e -> { mario.collectMushroom(); gamePanel.checkCollisions(); }, new Color(255, 99, 71));
+        addStyledButton("🌸 Fire Flower", e -> { mario.collectFireFlower(); gamePanel.checkCollisions(); }, new Color(255, 69, 0));
+        addStyledButton("⭐ Star", e -> { mario.collectStar(); gamePanel.checkCollisions(); }, new Color(255, 215, 0));
+        addStyledButton("💥 Damage", e -> mario.takeDamage(), new Color(178, 34, 34));
+        addStyledButton("🚀 Speed", e -> addSpeedBoost(), new Color(30, 144, 255));
 
-        addButton("⬆️ DblJump", e -> addDoubleJump());
-        addButton("🛡️ Shield", e -> addShield());
-        addButton("💪 Strength", e -> addSuperStrength());
-        addButton("🎭 Demo", e -> demonstratePatterns());
-        addButton("◀️ Prev Level", e -> previousLevel());
-        addButton("▶️ Next Level", e -> nextLevel());
+        addStyledButton("⬆️ DblJump", e -> addDoubleJump(), new Color(123, 104, 238));
+        addStyledButton("🛡️ Shield", e -> addShield(), new Color(0, 191, 255));
+        addStyledButton("💪 Strength", e -> addSuperStrength(), new Color(218, 165, 32));
+        addStyledButton("🎭 Demo", e -> demonstratePatterns(), new Color(138, 43, 226));
+        addStyledButton("◀️ Prev Level", e -> previousLevel(), new Color(72, 61, 139));
+        addStyledButton("▶️ Next Level", e -> nextLevel(), new Color(72, 61, 139));
     }
 
     private void createStatusPanel() {
-        statusPanel = new JPanel(new BorderLayout());
-        statusPanel.setBorder(BorderFactory.createTitledBorder("Mario Status"));
-        statusPanel.setBackground(new Color(250, 250, 250));
+        statusPanel = new JPanel(new BorderLayout(10, 5));
+        statusPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder(
+                        BorderFactory.createLineBorder(new Color(100, 100, 100), 2),
+                        "Mario Status",
+                        javax.swing.border.TitledBorder.CENTER,
+                        javax.swing.border.TitledBorder.TOP,
+                        new Font("Arial", Font.BOLD, 14),
+                        new Color(220, 220, 220)
+                ),
+                BorderFactory.createEmptyBorder(5, 10, 10, 10)
+        ));
+        statusPanel.setBackground(new Color(50, 50, 50));
+        statusPanel.setForeground(Color.WHITE);
 
         // Left side - Score and Lives
-        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        scoreLabel = new JLabel("Score: 0");
-        livesLabel = new JLabel("Lives: 3");
-        scoreLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        livesLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
+        leftPanel.setOpaque(false);
+        scoreLabel = createStatusLabel("Score: 0", new Color(50, 205, 50));
+        livesLabel = createStatusLabel("Lives: 3", new Color(255, 99, 71));
         leftPanel.add(scoreLabel);
-        leftPanel.add(Box.createHorizontalStrut(20));
         leftPanel.add(livesLabel);
 
         // Center - State and Abilities
-        JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        stateLabel = new JLabel("State: Small Mario");
-        abilitiesLabel = new JLabel("Abilities: None");
-        stateLabel.setFont(new Font("Arial", Font.BOLD, 12));
-        abilitiesLabel.setFont(new Font("Arial", Font.PLAIN, 11));
+        JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 5));
+        centerPanel.setOpaque(false);
+        stateLabel = createStatusLabel("State: Small Mario", new Color(135, 206, 250));
+        abilitiesLabel = createStatusLabel("Abilities: None", new Color(255, 215, 0));
+        levelLabel = createStatusLabel("Level: 1-1", new Color(147, 112, 219));
         centerPanel.add(stateLabel);
-        centerPanel.add(Box.createHorizontalStrut(10));
         centerPanel.add(abilitiesLabel);
+        centerPanel.add(levelLabel);
 
         // Right side - Invincibility timer
-        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 5));
+        rightPanel.setOpaque(false);
         invincibilityBar = new JProgressBar(0, 8);
         invincibilityBar.setStringPainted(true);
         invincibilityBar.setString("Invincibility");
+        invincibilityBar.setForeground(new Color(255, 105, 180));
+        invincibilityBar.setBackground(new Color(50, 50, 50));
+        invincibilityBar.setBorder(BorderFactory.createLineBorder(new Color(100, 100, 100)));
+        invincibilityBar.setFont(new Font("Arial", Font.BOLD, 10));
         invincibilityBar.setVisible(false);
         rightPanel.add(invincibilityBar);
 
@@ -131,11 +163,70 @@ public class GameFrame extends JFrame {
         statusPanel.add(rightPanel, BorderLayout.EAST);
     }
 
-    private void addButton(String text, ActionListener action) {
+    private void createLogPanel() {
+        logPanel = new JPanel(new BorderLayout());
+        logPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder(
+                        BorderFactory.createLineBorder(new Color(100, 100, 100), 2),
+                        "Game Log",
+                        javax.swing.border.TitledBorder.CENTER,
+                        javax.swing.border.TitledBorder.TOP,
+                        new Font("Arial", Font.BOLD, 14),
+                        new Color(220, 220, 220)
+                ),
+                BorderFactory.createEmptyBorder(5, 10, 10, 10)
+        ));
+        logPanel.setBackground(new Color(50, 50, 50));
+        logPanel.setPreferredSize(new Dimension(250, 0));
+
+        logArea = new JTextArea();
+        logArea.setEditable(false);
+        logArea.setBackground(new Color(30, 30, 30));
+        logArea.setForeground(Color.WHITE);
+        logArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        logArea.setLineWrap(true);
+        logArea.setWrapStyleWord(true);
+
+        JScrollPane scrollPane = new JScrollPane(logArea);
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(80, 80, 80)));
+        scrollPane.getViewport().setBackground(new Color(30, 30, 30));
+
+        logPanel.add(scrollPane, BorderLayout.CENTER);
+    }
+
+    private JLabel createStatusLabel(String text, Color color) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Arial", Font.BOLD, 14));
+        label.setForeground(color);
+        return label;
+    }
+
+    private void addStyledButton(String text, ActionListener action, Color color) {
         JButton button = new JButton(text);
         button.addActionListener(action);
-        button.setFont(new Font("Arial", Font.PLAIN, 10));
+        button.setFont(new Font("Arial", Font.BOLD, 12));
         button.setFocusable(false);
+        button.setBackground(color);
+        button.setForeground(color);
+        button.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(color.darker(), 2),
+                BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        ));
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        // Hover effect
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(color.brighter());
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(color);
+            }
+        });
+
         controlPanel.add(button);
     }
 
@@ -340,13 +431,13 @@ public class GameFrame extends JFrame {
                     mario.collectFireFlower();
                     break;
                 case 2:
-                    addLogMessage("📖 Decorator Pattern: Adding Speed Boost...", Color.pink);
+                    addLogMessage("📖 Decorator Pattern: Adding Speed Boost...", Color.PINK);
                     if (!mario.hasAbility("Speed Boost")) {
                         mario = new SpeedBoostDecorator(mario);
                     }
                     break;
                 case 3:
-                    addLogMessage("📖 Decorator Pattern: Adding Shield...", Color.pink);
+                    addLogMessage("📖 Decorator Pattern: Adding Shield...", Color.PINK);
                     if (!mario.hasAbility("Shield")) {
                         mario = new ShieldDecorator(mario);
                     }
@@ -373,7 +464,15 @@ public class GameFrame extends JFrame {
     }
 
     public void addLogMessage(String message, Color color) {
+        // Add to game panel if needed
         gamePanel.addLogMessage(message, color);
+
+        // Also add to the log area
+        SwingUtilities.invokeLater(() -> {
+            logArea.setForeground(color);
+            logArea.append(message + "\n");
+            logArea.setCaretPosition(logArea.getDocument().getLength());
+        });
     }
 
     public void updateDisplay() {
@@ -381,14 +480,15 @@ public class GameFrame extends JFrame {
         scoreLabel.setText("Score: " + mario.getScore());
         livesLabel.setText("Lives: " + mario.getLives());
         stateLabel.setText("State: " + mario.getStateName());
+        levelLabel.setText("Level: " + levelManager.getCurrentLevel().getName());
 
         List<String> abilities = mario.getAbilities();
         if (abilities.isEmpty()) {
             abilitiesLabel.setText("Abilities: None");
         } else {
             String abilitiesText = "Abilities: " + String.join(", ", abilities);
-            if (abilitiesText.length() > 60) {
-                abilitiesText = abilitiesText.substring(0, 57) + "...";
+            if (abilitiesText.length() > 40) {
+                abilitiesText = abilitiesText.substring(0, 37) + "...";
             }
             abilitiesLabel.setText(abilitiesText);
         }
@@ -442,6 +542,9 @@ public class GameFrame extends JFrame {
         add(gamePanel, BorderLayout.CENTER);
         updateDisplay();
         revalidate();
+
+        // Clear log
+        logArea.setText("");
     }
 
     public void resetGame() {
